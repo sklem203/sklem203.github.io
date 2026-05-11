@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sarah Klemmer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #FDF6F0;
+      --ink: #2A1F2D;
+      --coral: #E8638C;
+      --sage: #F4A7C0;
+      --butter: #F9D6E8;
+      --lavender: #C9A8D8;
+      --sky: #F7B8D0;
+      --accent-dark: #3D2B40;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--coral);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, background 0.2s ease;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--coral);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.3s ease, width 0.2s, height 0.2s, opacity 0.2s;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 48px;
+      mix-blend-mode: multiply;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--coral);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 120px 48px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(4rem, 7vw, 7rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.4s forwards;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--coral);
+    }
+
+    .hero-desc {
+      font-size: 0.85rem;
+      line-height: 1.8;
+      max-width: 380px;
+      color: #555;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.8s forwards;
+      transition: gap 0.3s ease;
+    }
+
+    .hero-cta:hover { gap: 20px; }
+
+    .hero-cta::after {
+      content: '→';
+      font-size: 1rem;
+    }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Colorful collage shapes in hero */
+    .hero-shapes {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 4px;
+      opacity: 0;
+      animation: shapeIn 1s ease forwards;
+    }
+
+    .shape-1 {
+      width: 260px; height: 340px;
+      background: var(--lavender);
+      top: 15%; left: 10%;
+      transform: rotate(-6deg);
+      animation-delay: 0.3s;
+    }
+
+    .shape-2 {
+      width: 200px; height: 260px;
+      background: var(--butter);
+      top: 25%; left: 30%;
+      transform: rotate(4deg);
+      animation-delay: 0.5s;
+    }
+
+    .shape-3 {
+      width: 160px; height: 200px;
+      background: var(--sage);
+      top: 10%; left: 50%;
+      transform: rotate(-3deg);
+      animation-delay: 0.7s;
+    }
+
+    .shape-4 {
+      width: 120px; height: 120px;
+      background: var(--coral);
+      bottom: 20%; right: 15%;
+      border-radius: 50%;
+      animation-delay: 0.9s;
+    }
+
+    .shape-5 {
+      width: 80px; height: 80px;
+      background: #F2C4D8;
+      bottom: 35%; left: 15%;
+      transform: rotate(45deg);
+      animation-delay: 1.1s;
+    }
+
+    .hero-label {
+      position: absolute;
+      bottom: 80px;
+      right: 48px;
+      writing-mode: vertical-rl;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #999;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.2s forwards;
+    }
+
+    /* Marquee */
+    .marquee-wrap {
+      background: var(--ink);
+      padding: 16px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      animation: marquee 18s linear infinite;
+    }
+
+    .marquee-item {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cream);
+      padding: 0 40px;
+    }
+
+    .marquee-item span {
+      color: var(--coral);
+      margin: 0 8px;
+    }
+
+    /* About */
+    .about {
+      padding: 120px 48px;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+      align-items: start;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .about-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--coral);
+      padding-top: 8px;
+    }
+
+    .about-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      line-height: 1.2;
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .about-content h2 em {
+      font-style: italic;
+      color: var(--coral);
+    }
+
+    .about-content p {
+      font-size: 0.9rem;
+      line-height: 1.9;
+      color: #444;
+      margin-bottom: 20px;
+      max-width: 560px;
+    }
+
+    .about-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 40px;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border: 1.5px solid var(--ink);
+      border-radius: 100px;
+      transition: all 0.25s ease;
+    }
+
+    .tag:hover {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .tag.coral { border-color: var(--coral); color: var(--coral); }
+    .tag.coral:hover { background: var(--coral); color: white; }
+    .tag.sage { border-color: var(--lavender); color: #8a4aaa; }
+    .tag.sage:hover { background: var(--lavender); color: white; }
+
+    /* Work */
+    .work {
+      padding: 80px 48px 120px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 60px;
+      border-top: 1.5px solid var(--ink);
+      padding-top: 24px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 700;
+    }
+
+    .section-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: #999;
+      letter-spacing: 0.1em;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .project-card {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: var(--ink);
+      cursor: none;
+    }
+
+    .project-card:first-child {
+      grid-column: span 2;
+      aspect-ratio: 16/9;
+    }
+
+    .project-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.6s ease;
+    }
+
+    .project-card:hover .project-bg { transform: scale(1.05); }
+
+    .project-card:nth-child(1) .project-bg { background: linear-gradient(135deg, var(--lavender) 0%, #a678c0 100%); }
+    .project-card:nth-child(2) .project-bg { background: linear-gradient(135deg, var(--coral) 0%, #c43a6e 100%); }
+    .project-card:nth-child(3) .project-bg { background: linear-gradient(135deg, #F2C4D8 0%, #e8a0c0 100%); }
+    .project-card:nth-child(4) .project-bg { background: linear-gradient(135deg, var(--sage) 0%, #e0789a 100%); }
+
+    /* Placeholder film grain texture */
+    .project-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    .project-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 32px;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+      transform: translateY(8px);
+      transition: transform 0.3s ease;
+    }
+
+    .project-card:hover .project-info { transform: translateY(0); }
+
+    .project-type {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+
+    .project-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .project-year {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 6px;
+    }
+
+    .project-placeholder {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      text-align: center;
+    }
+
+    /* Contact */
+    .contact {
+      background: var(--ink);
+      padding: 120px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact::before {
+      content: 'HELLO';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(8rem, 20vw, 18rem);
+      color: rgba(255,255,255,0.03);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .contact-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 32px;
+    }
+
+    .contact h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.1;
+      margin-bottom: 48px;
+    }
+
+    .contact h2 em {
+      font-style: italic;
+      color: var(--butter);
+    }
+
+    .contact-email {
+      display: inline-block;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      color: var(--cream);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--coral);
+      padding-bottom: 4px;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .contact-email:hover { color: var(--butter); border-color: var(--butter); }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .contact-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .contact-link:hover { color: var(--cream); }
+
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shapeIn {
+      from { opacity: 0; transform: translateY(30px) rotate(var(--r, 0deg)); }
+      to { opacity: 1; transform: translateY(0) rotate(var(--r, 0deg)); }
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 120px 24px 80px; }
+      .about { grid-template-columns: 1fr; gap: 24px; padding: 80px 24px; }
+      .work { padding: 60px 24px 80px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card:first-child { grid-column: span 1; aspect-ratio: 3/4; }
+      .contact { padding: 80px 24px; }
+      footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <a href="#" class="nav-logo">Sarah Klemmer</a>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <p class="hero-tag">Film · Media · Storytelling</p>
+      <h1 class="hero-name">Sarah<br/><em>Klemmer</em></h1>
+      <p class="hero-desc">
+        Filmmaker and media student at Syracuse University, 
+        studying Television, Radio & Film and Information Studies. 
+        Interested in documentary, narrative film, and the stories 
+        worth telling.
+      </p>
+      <a href="#work" class="hero-cta">View my work</a>
+    </div>
+    <div class="hero-right">
+      <div class="hero-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+      </div>
+    </div>
+    <span class="hero-label">sarahklemmer.com</span>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">Film Production <span>✦</span></span>
+      <span class="marquee-item">Documentary <span>✦</span></span>
+      <span class="marquee-item">Screenwriting <span>✦</span></span>
+      <span class="marquee-item">Sound Design <span>✦</span></span>
+      <span class="marquee-item">Media Production <span>✦</span></span>
+      <span class="marquee-item">Narrative Film <span>✦</span></span>
+      <span class="marquee-item">Cinematography <span>✦</span></span>
+      <span class="marquee-item">Film Production <span>✦</span></span>
+      <span class="marquee-item">Documentary <span>✦</span></span>
+      <span class="marquee-item">Screenwriting <span>✦</span></span>
+      <span class="marquee-item">Sound Design <span>✦</span></span>
+      <span class="marquee-item">Media Production <span>✦</span></span>
+      <span class="marquee-item">Narrative Film <span>✦</span></span>
+      <span class="marquee-item">Cinematography <span>✦</span></span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-label reveal">About</div>
+    <div class="about-content reveal">
+      <h2>Making things that<br/><em>mean something.</em></h2>
+      <p>
+        I'm a second-year student at Syracuse University's S.I. Newhouse School 
+        of Public Communications, pursuing a dual degree in Television, Radio & Film 
+        and Information Studies. I'm drawn to documentary and narrative filmmaking — 
+        particularly work that sits at the intersection of culture, history, and human experience.
+      </p>
+      <p>
+        This summer I'm working with The WWII Foundation in Normandy, France, 
+        supporting documentary filmmakers and historians on location. On campus, 
+        I serve as Community Service Chair for Kappa Theta Pi, a professional technology fraternity.
+      </p>
+      <div class="about-tags">
+        <span class="tag coral">Adobe Premiere</span>
+        <span class="tag sage">Python</span>
+        <span class="tag">Screenwriting</span>
+        <span class="tag coral">Documentary</span>
+        <span class="tag">Cinematography</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section class="work" id="work">
+    <div class="section-header reveal">
+      <h2 class="section-title">Selected Work</h2>
+      <span class="section-count">Projects</span>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-bg"></div>
+        <div class="project-placeholder">Replace with your project still</div>
+        <div class="project-info">
+          <p class="project-type">Documentary</p>
+          <h3 class="project-title">Project Title Here</h3>
+          <p class="project-year">2026</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-bg"></div>
+        <div class="project-placeholder">Replace with your project still</div>
+        <div class="project-info">
+          <p class="project-type">Short Film</p>
+          <h3 class="project-title">Project Title Here</h3>
+          <p class="project-year">2025</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-bg"></div>
+        <div class="project-placeholder">Replace with your project still</div>
+        <div class="project-info">
+          <p class="project-type">Narrative</p>
+          <h3 class="project-title">Project Title Here</h3>
+          <p class="project-year">2025</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-bg"></div>
+        <div class="project-placeholder">Replace with your project still</div>
+        <div class="project-info">
+          <p class="project-type">Editing</p>
+          <h3 class="project-title">Project Title Here</h3>
+          <p class="project-year">2024</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <p class="contact-label">Get in touch</p>
+    <h2>Let's make<br/><em>something.</em></h2>
+    <a href="mailto:your@email.com" class="contact-email">your@email.com</a>
+    <div class="contact-links">
+      <a href="#" class="contact-link">LinkedIn</a>
+      <a href="#" class="contact-link">Vimeo</a>
+      <a href="#" class="contact-link">Instagram</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Sarah Klemmer</span>
+    <span>Syracuse, NY</span>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button, .project-card, .tag').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(2)';
+        cursor.style.background = 'var(--butter)';
+        ring.style.opacity = '0';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursor.style.background = 'var(--coral)';
+        ring.style.opacity = '0.5';
+      });
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          // stagger children if multiple
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach((el, i) => {
+      el.style.transitionDelay = (i % 3) * 0.1 + 's';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
