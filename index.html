@@ -382,92 +382,113 @@
       letter-spacing: 0.1em;
     }
 
-    .projects-grid {
+    /* Project List */
+    .projects-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-    }
-
-    .project-card {
-      position: relative;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-      background: var(--ink);
+      grid-template-columns: 60px 1fr auto auto;
+      align-items: center;
+      gap: 32px;
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
       cursor: none;
+      position: relative;
+      transition: padding-left 0.3s ease;
+      overflow: hidden;
     }
 
-    .project-card:first-child {
-      grid-column: span 2;
-      aspect-ratio: 16/9;
-    }
-
-    .project-bg {
-      position: absolute;
-      inset: 0;
-      transition: transform 0.6s ease;
-    }
-
-    .project-card:hover .project-bg { transform: scale(1.05); }
-
-    .project-card:nth-child(1) .project-bg { background: linear-gradient(135deg, var(--lavender) 0%, #a678c0 100%); }
-    .project-card:nth-child(2) .project-bg { background: linear-gradient(135deg, var(--coral) 0%, #c43a6e 100%); }
-    .project-card:nth-child(3) .project-bg { background: linear-gradient(135deg, #F2C4D8 0%, #e8a0c0 100%); }
-    .project-card:nth-child(4) .project-bg { background: linear-gradient(135deg, var(--sage) 0%, #e0789a 100%); }
-
-    /* Placeholder film grain texture */
-    .project-bg::after {
+    .project-row::before {
       content: '';
       position: absolute;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-      opacity: 0.4;
+      background: var(--butter);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
     }
 
-    .project-info {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 32px;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-      transform: translateY(8px);
-      transition: transform 0.3s ease;
+    .project-row:hover::before { opacity: 0.4; }
+    .project-row:hover { padding-left: 16px; }
+    .project-row > * { position: relative; z-index: 1; }
+
+    .project-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--coral);
+      letter-spacing: 0.1em;
     }
 
-    .project-card:hover .project-info { transform: translateY(0); }
+    .project-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.1;
+      transition: color 0.2s ease;
+    }
+
+    .project-row:hover .project-title { color: var(--coral); }
+
+    .project-subtitle {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: #888;
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
 
     .project-type {
       font-family: 'DM Mono', monospace;
       font-size: 0.65rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 8px;
+      color: #aaa;
+      border: 1px solid #ddd;
+      padding: 6px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
     }
 
-    .project-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: white;
-      line-height: 1.2;
+    .project-row:hover .project-type {
+      border-color: var(--coral);
+      color: var(--coral);
     }
 
     .project-year {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
-      color: rgba(255,255,255,0.5);
-      margin-top: 6px;
+      color: #bbb;
+      white-space: nowrap;
     }
 
-    .project-placeholder {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      text-align: center;
+    .project-preview {
+      position: fixed;
+      width: 280px;
+      height: 160px;
+      border-radius: 4px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0;
+      transform: scale(0.92) rotate(-2deg);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .project-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .project-preview.visible {
+      opacity: 1;
+      transform: scale(1) rotate(-1deg);
     }
 
     /* Contact */
@@ -600,8 +621,8 @@
       .hero-left { padding: 120px 24px 80px; }
       .about { grid-template-columns: 1fr; gap: 24px; padding: 80px 24px; }
       .work { padding: 60px 24px 80px; }
-      .projects-grid { grid-template-columns: 1fr; }
-      .project-card:first-child { grid-column: span 1; aspect-ratio: 16/9; }
+      .project-row { grid-template-columns: 40px 1fr; gap: 16px; }
+      .project-type, .project-year { display: none; }
       .contact { padding: 80px 24px; }
       footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
     }
@@ -627,8 +648,10 @@
       <p class="hero-tag">Film · Media · Storytelling</p>
       <h1 class="hero-name">Sarah<br/><em>Klemmer</em></h1>
       <p class="hero-desc">
-        Student at Syracuse University, studying Television, Radio & Film and Information Studies. 
-        Interested in documentary, narrative film, educational and cultural content, and the stories worth telling.
+        Filmmaker and media student at Syracuse University, 
+        studying Television, Radio & Film and Information Studies. 
+        Interested in documentary, narrative film, and the stories 
+        worth telling.
       </p>
       <a href="#work" class="hero-cta">View my work</a>
     </div>
@@ -672,7 +695,7 @@
       <p>
         I'm a second-year student at Syracuse University's S.I. Newhouse School 
         of Public Communications, pursuing a dual degree in Television, Radio & Film 
-        and Data Analytics. I'm drawn to documentary and narrative filmmaking — 
+        and Information Studies. I'm drawn to documentary and narrative filmmaking — 
         particularly work that sits at the intersection of culture, history, and human experience.
       </p>
       <p>
@@ -696,48 +719,66 @@
       <h2 class="section-title">Selected Work</h2>
       <span class="section-count">Projects</span>
     </div>
-    <div class="projects-grid">
-      <div class="project-card reveal">
-        <div class="project-bg" style="background-image: url('whatsleft_screenshot.png'); background-size: cover; background-position: center;"></div>
-        <div class="project-info">
-          <p class="project-type">Narrative Film</p>
+    <div class="projects-list">
+
+      <div class="project-row reveal" data-img="whatsleft_screenshot.png">
+        <span class="project-num">01</span>
+        <div>
           <h3 class="project-title">What's Left</h3>
-          <p class="project-year">2026</p>
+          <p class="project-subtitle">An influencer gets canceled and reevaluates her life trajectory</p>
         </div>
+        <span class="project-type">Narrative Film</span>
+        <span class="project-year">2025</span>
       </div>
-      <div class="project-card reveal">
-        <div class="project-bg" style="background-image: url('studyhour_screenshot.png'); background-size: cover; background-position: center;"></div>
-        <div class="project-info">
-          <p class="project-type">Narrative</p>
+
+      <div class="project-row reveal" data-img="studyhour_screenshot.png">
+        <span class="project-num">02</span>
+        <div>
           <h3 class="project-title">Study Hour</h3>
-          <p class="project-year">2026</p>
+          <p class="project-subtitle">A college girl keeps hearing a mysterious noise while trying to work</p>
         </div>
+        <span class="project-type">Narrative Film</span>
+        <span class="project-year">2025</span>
       </div>
-      <div class="project-card reveal">
-        <div class="project-bg" style="background-image: url('thedoor_screenshot.png'); background-size: cover; background-position: center;"></div>
-          <p class="project-type">Editing</p>
+
+      <div class="project-row reveal" data-img="thedoor_screenshot.png">
+        <span class="project-num">03</span>
+        <div>
           <h3 class="project-title">The Door</h3>
-          <p class="project-year">2026</p>
+          <p class="project-subtitle">A college girl struggles to build the confidence to leave her apartment</p>
         </div>
+        <span class="project-type">Narrative Film</span>
+        <span class="project-year">2025</span>
       </div>
-      <div class="project-card reveal">
-        <div class="project-bg" style="background-image: url('cjala_screenshot.png'); background-size: cover; background-position: top center;"></div>
-        <div class="project-info">
-          <p class="project-type">Editing</p>
-          <h3 class="project-title">Cjala Surratt: Syracuse Entrepreneur and Activist</h3>
-          <p class="project-year">2025</p>
+
+      <div class="project-row reveal" data-img="cjala_screenshot.png">
+        <span class="project-num">04</span>
+        <div>
+          <h3 class="project-title">Cjala Surratt</h3>
+          <p class="project-subtitle">Portrait of a Syracuse entrepreneur, activist, and business owner</p>
         </div>
+        <span class="project-type">Documentary Portrait</span>
+        <span class="project-year">2025</span>
       </div>
+
     </div>
+
+    <!-- Hover preview -->
+    <div class="project-preview" id="preview">
+      <img id="preview-img" src="" alt="" />
+    </div>
+
   </section>
 
   <!-- CONTACT -->
   <section class="contact" id="contact">
     <p class="contact-label">Get in touch</p>
     <h2>Let's make<br/><em>something.</em></h2>
-    <a href="mailto:skklemmer@gmail.com" class="contact-email">skklemmer@gmail.com</a>
+    <a href="mailto:your@email.com" class="contact-email">your@email.com</a>
     <div class="contact-links">
-      <a href="https://www.linkedin.com/in/sarah-klemmer/" class="contact-link">LinkedIn</a>
+      <a href="#" class="contact-link">LinkedIn</a>
+      <a href="#" class="contact-link">Vimeo</a>
+      <a href="#" class="contact-link">Instagram</a>
     </div>
   </section>
 
@@ -794,6 +835,25 @@
     reveals.forEach((el, i) => {
       el.style.transitionDelay = (i % 3) * 0.1 + 's';
       observer.observe(el);
+    });
+
+    // Project row hover preview
+    const preview = document.getElementById('preview');
+    const previewImg = document.getElementById('preview-img');
+
+    document.querySelectorAll('.project-row').forEach(row => {
+      const img = row.dataset.img;
+      row.addEventListener('mouseenter', () => {
+        previewImg.src = img;
+        preview.classList.add('visible');
+      });
+      row.addEventListener('mouseleave', () => {
+        preview.classList.remove('visible');
+      });
+      row.addEventListener('mousemove', (e) => {
+        preview.style.left = (e.clientX + 24) + 'px';
+        preview.style.top = (e.clientY - 80) + 'px';
+      });
     });
   </script>
 </body>
